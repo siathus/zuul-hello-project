@@ -1,17 +1,9 @@
 package com.direa.seonggook.zuulsample.filter;
 
 import com.direa.seonggook.zuulsample.eureka.ZuulEurekaClient;
-import com.direa.seonggook.zuulsample.hystrix.DemoCommand;
+import com.direa.seonggook.zuulsample.hystrix.DemoHystrixCommand;
 import com.netflix.appinfo.InstanceInfo;
-import com.netflix.client.ClientFactory;
-import com.netflix.client.config.ClientConfigFactory;
-import com.netflix.client.config.DefaultClientConfigImpl;
-import com.netflix.discovery.DiscoveryClient;
-import com.netflix.discovery.DiscoveryManager;
 import com.netflix.discovery.EurekaClient;
-import com.netflix.hystrix.HystrixCommandProperties;
-import com.netflix.niws.loadbalancer.*;
-import com.netflix.discovery.providers.DefaultEurekaClientConfigProvider;
 import com.netflix.loadbalancer.*;
 import com.netflix.niws.loadbalancer.DiscoveryEnabledNIWSServerList;
 import com.netflix.niws.loadbalancer.NIWSDiscoveryPing;
@@ -22,10 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import com.netflix.niws.loadbalancer.DiscoveryEnabledServer;
 
 import javax.inject.Provider;
-import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
 
 public class ZuulRouteFilter extends ZuulFilter {
     @Autowired
@@ -55,7 +44,7 @@ public class ZuulRouteFilter extends ZuulFilter {
 //        EurekaClient client = new ZuulEurekaClient().getZuulEurekaClient();
 
         // 유레카 서버찾기
-        InstanceInfo nextServerInfo = null;
+//        InstanceInfo nextServerInfo = null;
         try {
 //            nextServerInfo = client.getNextServerFromEureka("sampleservice.mydomain.net", false);
 
@@ -77,12 +66,12 @@ public class ZuulRouteFilter extends ZuulFilter {
 
             List<DiscoveryEnabledServer> deList = list.getInitialListOfServers();
             BaseLoadBalancer lb = new BaseLoadBalancer();
-            System.out.println("검색된 서비스의 전체 목록");
-            for (int i = 0; i < deList.size(); i++) {
-                System.out.println(deList.get(i).getPort());
-                lb.addServer((Server) deList.get(i));
-            }
-            System.out.println();
+//            System.out.println("검색된 서비스의 전체 목록");
+//            for (int i = 0; i < deList.size(); i++) {
+//                System.out.println(deList.get(i).getPort());
+//                lb.addServer((Server) deList.get(i));
+//            }
+//            System.out.println();
 
 //            ServerListFilter<DiscoveryEnabledServer> filter = new DefaultNIWSServerListFilter<>();
 //            ServerListUpdater updater = new PollingServerListUpdater();
@@ -95,31 +84,32 @@ public class ZuulRouteFilter extends ZuulFilter {
 //                    .buildDynamicServerListLoadBalancerWithUpdater();
 
 
+            // Load Balancer 설정 후 서버 선택
             IRule rule = new RandomRule();
             lb.setPing(new NIWSDiscoveryPing());
             lb.setRule(rule);
             Server server = lb.chooseServer();
+
             if (server != null) {
-                System.out.println("lb passed");
-                System.out.println(server.getPort());
+                System.out.println("Load Balancing Completed");
                 String destinationUrl = "http://localhost:" + server.getPort();
-                DemoCommand demoCommand = new DemoCommand(destinationUrl);
+                System.out.println(destinationUrl);
+                String result = new DemoHystrixCommand(destinationUrl).execute();
+
 //                String result = restTemplate.getForObject(destinationUrl, String.class);
 //                System.out.println(result);
             } else {
-                System.out.println("lb failed");
+                System.out.println("Load Balancing Failed");
                 System.exit(-1);
             }
 
-            System.out.println("===========================================");
+            System.out.println("============== Route Filter End ===============");
 
         } catch (Exception e) {
             e.printStackTrace();
             System.err.println("cannot find eureka service");
             System.exit(-1);
         }
-
-
         return null;
     }
 }

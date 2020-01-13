@@ -1,19 +1,17 @@
 package com.direa.seonggook.zuulsample.hystrix;
 
-import com.netflix.hystrix.HystrixCommand;
-import com.netflix.hystrix.HystrixCommandGroupKey;
-import com.netflix.hystrix.HystrixCommandKey;
-import com.netflix.hystrix.HystrixThreadPoolKey;
+import com.direa.seonggook.zuulsample.filter.HystrixRequestContextServletFilter;
+import com.netflix.hystrix.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-public class DemoCommand extends HystrixCommand<String> {
+public class DemoHystrixCommand extends HystrixCommand<String> {
 
     private final String url;
 
-    public DemoCommand(String url) {
+    public DemoHystrixCommand(String url) {
         super(Setter.withGroupKey(HystrixCommandGroupKey.Factory.asKey("demoGroup"))
         .andCommandKey(HystrixCommandKey.Factory.asKey("demo"))
         .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey("demoThreadPool")));
@@ -29,11 +27,11 @@ public class DemoCommand extends HystrixCommand<String> {
         } catch (Exception e) {
             throw new RuntimeException("DemoCommand 도중 예외 발생", e);
         }
-        return "aa";
+        return null;
     }
 
     @Override
     protected String getFallback() {
-        return "{}";
+        return "Fallback() 메소드 실행";
     }
 }

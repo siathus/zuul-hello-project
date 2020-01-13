@@ -1,5 +1,7 @@
 package com.direa.seonggook.zuulsample.listener;
 
+import com.direa.seonggook.zuulsample.filter.ZuulErrorFilter;
+import com.direa.seonggook.zuulsample.filter.ZuulPostFilter;
 import com.direa.seonggook.zuulsample.filter.ZuulPreFilter;
 import com.direa.seonggook.zuulsample.filter.ZuulRouteFilter;
 import com.netflix.zuul.FilterLoader;
@@ -38,6 +40,10 @@ public class HelloListener implements ServletContextListener {
         filterRegistry.put("pre", new ZuulPreFilter());
 
         filterRegistry.put("route", new ZuulRouteFilter());
+
+        filterRegistry.put("post", new ZuulPostFilter());
+
+        filterRegistry.put("error", new ZuulErrorFilter());
     }
 
     @Override
