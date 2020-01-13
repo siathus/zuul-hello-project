@@ -3,5 +3,5 @@ spring:
     name: zuul-sample
 
 server:
-  port: 8000
+  port: 8101
 
