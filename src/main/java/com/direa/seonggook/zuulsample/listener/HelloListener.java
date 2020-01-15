@@ -1,28 +1,13 @@
 package com.direa.seonggook.zuulsample.listener;
 
-import com.direa.seonggook.zuulsample.filter.ZuulErrorFilter;
-import com.direa.seonggook.zuulsample.filter.ZuulPostFilter;
-import com.direa.seonggook.zuulsample.filter.ZuulPreFilter;
-import com.direa.seonggook.zuulsample.filter.ZuulRouteFilter;
-import com.netflix.zuul.FilterLoader;
+import com.direa.seonggook.zuulsample.filter.*;
 import com.netflix.zuul.ZuulFilter;
-import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.filters.FilterRegistry;
-import com.netflix.zuul.groovy.GroovyCompiler;
-import com.netflix.zuul.http.ZuulServlet;
 import com.netflix.zuul.monitoring.MonitoringHelper;
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 @WebListener
 public class HelloListener implements ServletContextListener {
@@ -39,9 +24,14 @@ public class HelloListener implements ServletContextListener {
 
         filterRegistry.put("pre", new ZuulPreFilter());
 
-        filterRegistry.put("route", new ZuulRouteFilter());
+        // put의 첫 번째 매개변수는 그냥 filter의 type명이 아니라 각 filter를 구분하기 위한 key로 사용된다.
+        filterRegistry.put("firstRoute", new ZuulRouteFilter());
+        filterRegistry.put("secondRoute", new SecondZuulRouterFilter());
 
         filterRegistry.put("post", new ZuulPostFilter());
+
+        // 나중에 해야될거
+//        filterRegistry.put("post", new SecondZuulPostFilter());
 
         filterRegistry.put("error", new ZuulErrorFilter());
     }

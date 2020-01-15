@@ -1,9 +1,11 @@
 package com.direa.seonggook.zuulsample.hystrix;
 
 import com.netflix.hystrix.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-public class ServiceHystrixCommand extends HystrixCommand<String> {
+public class ServiceHystrixCommand extends HystrixCommand<ResponseEntity<String>> {
 
     private final String url;
 
@@ -15,19 +17,25 @@ public class ServiceHystrixCommand extends HystrixCommand<String> {
     }
 
     @Override
-    protected String run() {
+    protected ResponseEntity<String> run() {
         RestTemplate restTemplate = new RestTemplate();
-        String result = null;
+        ResponseEntity<String> responseEntity = null;
         try {
-            result = restTemplate.getForObject(url, String.class);
+
+//            throw new RuntimeException("test");
+
+            responseEntity = restTemplate.getForEntity(url, String.class);
+            System.out.println("Response Body : " + responseEntity.getBody());
+
         } catch (Exception e) {
             throw new RuntimeException("DemoCommand 도중 예외 발생", e);
         }
-        return result;
+        return responseEntity;
     }
 
     @Override
-    protected String getFallback() {
-        return "Service 호출 실패 => Fallback 메소드 실행";
+    protected ResponseEntity<String> getFallback() {
+        // fallback 메소드 :  500 INTERNAL SERVER ERROR를 반환한다.
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

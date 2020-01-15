@@ -9,6 +9,7 @@ import com.netflix.niws.loadbalancer.NIWSDiscoveryPing;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 import com.netflix.niws.loadbalancer.DiscoveryEnabledServer;
 
@@ -26,7 +27,7 @@ public class ZuulRouteFilter extends ZuulFilter {
 
     @Override
     public int filterOrder() {
-        return 1;
+        return 1000;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class ZuulRouteFilter extends ZuulFilter {
 
     @Override
     public Object run() {
-        System.out.println("============== Route Filter Run ============");
+        System.out.println("============== First Route Filter Run ============");
         RequestContext ctx = RequestContext.getCurrentContext();
         RestTemplate restTemplate = new RestTemplate();
 
@@ -75,16 +76,23 @@ public class ZuulRouteFilter extends ZuulFilter {
                 String destinationUrl = "http://localhost:" + server.getPort();
                 System.out.println("최종 URL : " + destinationUrl);
 
+                ctx.set("destinationUrl", destinationUrl);
+
+
+
+                /* SecondZuulRouterFilter에서 실행할 로직
                 // Hystrix를 통해 Service 로직 실행 및 결과 가져오기
                 String result = new ServiceHystrixCommand(destinationUrl).execute();
 
                 // 결과값을 RequestContext에 Response Body에 설정
                 ctx.setResponseBody(result);
+                */
+
             } else {
                 System.out.println("Load Balancing Failed");
             }
 
-            System.out.println("============== Route Filter End ===============");
+            System.out.println("============== First Route Filter End ===============");
 
         } catch (Exception e) {
             e.printStackTrace();
