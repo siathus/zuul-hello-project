@@ -16,13 +16,16 @@ public class ZuulErrorFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
-        RequestContext ctx = RequestContext.getCurrentContext();
+//
+//        RequestContext ctx = RequestContext.getCurrentContext();
+//
+//        // response의 status code가 500일 때 Error filter 실행
+//        if (ctx.getResponseStatusCode() == 500) {
+//            return true;
+//        }
+//        return false;
 
-        // response의 status code가 500일 때 Error filter 실행
-        if (ctx.getResponseStatusCode() == 500) {
-            return true;
-        }
-        return false;
+        return RequestContext.getCurrentContext().getThrowable() != null;
     }
 
     @Override

@@ -42,7 +42,6 @@ public class ZuulRouteFilter extends ZuulFilter {
         RestTemplate restTemplate = new RestTemplate();
 
         try {
-
             // Eureka의 VIP Address를 이용하여 같은 서비스를 제공하는 서버 목록 가져오기
             ServerList<DiscoveryEnabledServer> list = new DiscoveryEnabledNIWSServerList("sampleservice.mydomain.net", new Provider<EurekaClient>() {
                 private final EurekaClient eurekaClient = new ZuulEurekaClient().getZuulEurekaClient();

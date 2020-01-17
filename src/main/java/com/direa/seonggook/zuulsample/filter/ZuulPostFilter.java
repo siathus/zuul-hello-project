@@ -13,7 +13,7 @@ public class ZuulPostFilter extends ZuulFilter {
 
     @Override
     public int filterOrder() {
-        return 1000;
+        return 10;
     }
 
     @Override
@@ -30,15 +30,17 @@ public class ZuulPostFilter extends ZuulFilter {
 
     @Override
     public Object run() {
-        System.out.println("======== POST FILTER 실행 =======");
+        System.out.println("======== First Post Filter Run =======");
 
         RequestContext ctx = RequestContext.getCurrentContext();
 
         HttpServletResponse response = ctx.getResponse();
 
+        response.setCharacterEncoding("UTF-8");
+
         System.out.println("Response Body : " + ctx.getResponseBody());
 
-        System.out.println("======== POST FILTER 끝 =======");
+        System.out.println("======== First Post Filter End =======");
         return ctx.getResponseBody();
     }
 }

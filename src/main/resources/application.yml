@@ -1,7 +1,0 @@
-spring:
-  application:
-    name: zuul-sample
-
-server:
-  port: 8101
-

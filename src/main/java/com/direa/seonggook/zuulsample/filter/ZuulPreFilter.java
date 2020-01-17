@@ -30,10 +30,9 @@ public class ZuulPreFilter extends ZuulFilter {
     public Object run() {
         RequestContext ctx = RequestContext.getCurrentContext();
         HttpServletRequest request = ctx.getRequest();
-        System.out.println("========== Pre Filter Run =========");
+        System.out.println("========== First Pre Filter Run =========");
         System.out.println("Request Method : " + request.getMethod());
-        System.out.println("Request URL : " + request.getRequestURL().toString());
-        System.out.println("========== Pre Filter End ==========");
+        System.out.println("========== First Pre Filter End ==========");
 
         return null;
     }

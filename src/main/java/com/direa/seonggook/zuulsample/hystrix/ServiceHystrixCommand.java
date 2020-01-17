@@ -38,4 +38,5 @@ public class ServiceHystrixCommand extends HystrixCommand<ResponseEntity<String>
         // fallback 메소드 :  500 INTERNAL SERVER ERROR를 반환한다.
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
+
 }
