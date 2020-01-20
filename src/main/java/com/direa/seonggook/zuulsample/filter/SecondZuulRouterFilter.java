@@ -3,12 +3,14 @@ package com.direa.seonggook.zuulsample.filter;
 import com.direa.seonggook.zuulsample.hystrix.ServiceHystrixCommand;
 import com.netflix.hystrix.*;
 import com.netflix.hystrix.strategy.properties.HystrixPropertiesCommandDefault;
+import com.netflix.loadbalancer.Server;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import org.springframework.web.util.UriBuilderFactory;
 
@@ -27,7 +29,7 @@ public class SecondZuulRouterFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         RequestContext ctx = RequestContext.getCurrentContext();
-        if (ctx.get("destinationUrl") != null) {
+        if (ctx.get("server") != null) {
             return true;
         }
         return false;
@@ -38,24 +40,36 @@ public class SecondZuulRouterFilter extends ZuulFilter {
         System.out.println("============== Second Route Filter Run ============");
 
         RequestContext ctx = RequestContext.getCurrentContext();
-        String destinationUrl = (String) ctx.get("destinationUrl");
+        Server server = (Server)ctx.get("server");
 
-        System.out.println("destinationUrl : " + destinationUrl);
+        String url = server.getHostPort();
+        String requestUri = null;
+        // Request URI가 있다면 Server 주소에 해당 URI를 덧붙인다.
+//        if (ctx.get("requestUri") != null) {
+//            requestUri = (String)ctx.get("requestUri");
+//        }
+        System.out.println("Destination URL : " + url);
+        System.out.println("ToString : " + server.toString());
 
         // 실제 로직을 수행할 HystrixCommand 생성
-        ServiceHystrixCommand serviceHystrixCommand = new ServiceHystrixCommand(destinationUrl);
-        ResponseEntity<String> responseEntity = serviceHystrixCommand.execute();
+//        ServiceHystrixCommand serviceHystrixCommand = new ServiceHystrixCommand(url);
+//        ResponseEntity<String> responseEntity = serviceHystrixCommand.execute();
 
+        RestTemplate restTemplate = new RestTemplate();
+
+        String responseEntity = restTemplate.getForObject("http://" + url, String.class);
+        System.out.println("Result : " + responseEntity);
+        ctx.setResponseBody(responseEntity);
         // fallback 메소드가 실행되어 500 Internal Server Error가 발생했을 때
-        if (responseEntity.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
-            // 500 오류지만 클라이언트 화면에 띄우기 위해 200으로 설정
-            ctx.setResponseStatusCode(200);
-            ctx.setResponseBody("500 Internal Server Error !!");
-        } else {
-            // 요청이 정상적으로 처리되었을 때
-            // 반환받은 값을 RequestContext의 ResponseBody에 설정
-            ctx.setResponseBody(responseEntity.getBody());
-        }
+//        if (responseEntity.getStatusCode() == HttpStatus.INTERNAL_SERVER_ERROR) {
+//            // 500 오류지만 클라이언트 화면에 띄우기 위해 200으로 설정
+//            ctx.setResponseStatusCode(200);
+//            ctx.setResponseBody("500 Internal Server Error !!");
+//        } else {
+//            // 요청이 정상적으로 처리되었을 때
+//            // 반환받은 값을 RequestContext의 ResponseBody에 설정
+//            ctx.setResponseBody(responseEntity.getBody());
+//        }
 
         System.out.println("============== Second Route Filter End ===============");
         return null;

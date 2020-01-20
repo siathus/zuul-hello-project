@@ -24,7 +24,9 @@ public class ServiceHystrixCommand extends HystrixCommand<ResponseEntity<String>
 
 //            throw new RuntimeException("test");
 
-            responseEntity = restTemplate.getForEntity(url, String.class);
+            System.out.println("url : " + url);
+
+            responseEntity = restTemplate.getForEntity("localhost:8112/", String.class);
             System.out.println("Response Body : " + responseEntity.getBody());
 
         } catch (Exception e) {
@@ -33,10 +35,12 @@ public class ServiceHystrixCommand extends HystrixCommand<ResponseEntity<String>
         return responseEntity;
     }
 
+    /*
     @Override
     protected ResponseEntity<String> getFallback() {
         // fallback 메소드 :  500 INTERNAL SERVER ERROR를 반환한다.
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 
+     */
 }

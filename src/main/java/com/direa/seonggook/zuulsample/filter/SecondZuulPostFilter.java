@@ -19,7 +19,7 @@ public class SecondZuulPostFilter extends ZuulFilter {
 
     @Override
     public int filterOrder() {
-        return 2000;
+        return 3000;
     }
 
     @Override

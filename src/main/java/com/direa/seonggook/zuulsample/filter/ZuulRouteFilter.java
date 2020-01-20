@@ -32,6 +32,10 @@ public class ZuulRouteFilter extends ZuulFilter {
 
     @Override
     public boolean shouldFilter() {
+        RequestContext ctx = RequestContext.getCurrentContext();
+        if (ctx.get("serverList") != null) {
+            return false;
+        }
         return true;
     }
 
@@ -39,7 +43,6 @@ public class ZuulRouteFilter extends ZuulFilter {
     public Object run() {
         System.out.println("============== First Route Filter Run ============");
         RequestContext ctx = RequestContext.getCurrentContext();
-        RestTemplate restTemplate = new RestTemplate();
 
         try {
             // Eureka의 VIP Address를 이용하여 같은 서비스를 제공하는 서버 목록 가져오기
@@ -71,10 +74,12 @@ public class ZuulRouteFilter extends ZuulFilter {
             Server server = lb.chooseServer();
 
             if (server != null) {
+                // TODO localhost 하드코딩 수정
                 System.out.println("Load Balancing Completed : Port Number is " + server.getPort());
                 String destinationUrl = "http://localhost:" + server.getPort();
                 System.out.println("최종 URL : " + destinationUrl);
 
+                // TODO RequestContext에 URL 문자열값 말고 Server 객체로 저장하기
                 ctx.set("destinationUrl", destinationUrl);
 
 

@@ -1,6 +1,10 @@
 package com.direa.seonggook.zuulsample.listener;
 
 import com.direa.seonggook.zuulsample.filter.*;
+import com.netflix.client.ClientException;
+import com.netflix.client.ClientFactory;
+import com.netflix.client.config.DefaultClientConfigImpl;
+import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.filters.FilterRegistry;
 import com.netflix.zuul.monitoring.MonitoringHelper;
@@ -22,6 +26,7 @@ public class HelloListener implements ServletContextListener {
 
         final FilterRegistry filterRegistry = FilterRegistry.instance();
 
+        filterRegistry.put("thirdPre", new ThirdZuulPreFilter());
         filterRegistry.put("pre", new ZuulPreFilter());
         filterRegistry.put("secondPre", new SecondZuulPreFilter());
 
@@ -32,8 +37,10 @@ public class HelloListener implements ServletContextListener {
         filterRegistry.put("post", new ZuulPostFilter());
         filterRegistry.put("secondPost", new SecondZuulPostFilter());
 
-        filterRegistry.put("error", new ZuulErrorFilter());
+//        filterRegistry.put("error", new ZuulErrorFilter());
+
     }
+
 
     @Override
     public void contextDestroyed(ServletContextEvent sce) {

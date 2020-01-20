@@ -1,5 +1,6 @@
 package com.direa.seonggook.zuulsample.eureka;
 
+import com.direa.seonggook.zuulsample.config.CustomInstanceConfig;
 import com.netflix.appinfo.ApplicationInfoManager;
 import com.netflix.appinfo.EurekaInstanceConfig;
 import com.netflix.appinfo.InstanceInfo;
@@ -34,6 +35,7 @@ public class ZuulEurekaClient {
 
     public EurekaClient getZuulEurekaClient() {
         ApplicationInfoManager applicationInfoManager = initializeApplicationInfoManager(new MyDataCenterInstanceConfig());
+//        ApplicationInfoManager applicationInfoManager = initializeApplicationInfoManager(new CustomInstanceConfig("eureka"));
         EurekaClient client = initializeEurekaClient(applicationInfoManager, new DefaultEurekaClientConfig());
 
         return client;

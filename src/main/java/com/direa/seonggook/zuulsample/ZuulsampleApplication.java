@@ -5,6 +5,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 @ServletComponentScan
 @SpringBootApplication
