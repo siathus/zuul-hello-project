@@ -46,7 +46,7 @@ public class ThirdZuulPreFilter extends ZuulFilter {
         lb.setRule(rule);
         Server server = lb.chooseServer();
 
-        System.out.println("Server Host & Port : " + server.getHostPort());
+        System.out.println("Chosen Server Host & Port : " + server.getHostPort());
         ctx.putIfAbsent("server", server);
         System.out.println("========== Third Pre Filter End ==========");
         return null;

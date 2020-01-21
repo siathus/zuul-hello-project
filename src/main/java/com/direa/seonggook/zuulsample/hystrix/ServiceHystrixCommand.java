@@ -26,8 +26,10 @@ public class ServiceHystrixCommand extends HystrixCommand<ResponseEntity<String>
 
             System.out.println("url : " + url);
 
-            responseEntity = restTemplate.getForEntity("localhost:8112/", String.class);
-            System.out.println("Response Body : " + responseEntity.getBody());
+            responseEntity = restTemplate.getForEntity(url, String.class);
+            System.out.println("## Response Body Start ##");
+            System.out.println(responseEntity.getBody());
+            System.out.println("## Response Body End ##");
 
         } catch (Exception e) {
             throw new RuntimeException("DemoCommand 도중 예외 발생", e);

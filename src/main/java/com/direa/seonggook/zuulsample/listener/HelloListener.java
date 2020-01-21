@@ -1,6 +1,7 @@
 package com.direa.seonggook.zuulsample.listener;
 
 import com.direa.seonggook.zuulsample.filter.*;
+import com.direa.seonggook.zuulsample.property.ZuulProperties;
 import com.netflix.client.ClientException;
 import com.netflix.client.ClientFactory;
 import com.netflix.client.config.DefaultClientConfigImpl;
@@ -8,6 +9,7 @@ import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.filters.FilterRegistry;
 import com.netflix.zuul.monitoring.MonitoringHelper;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
@@ -16,11 +18,17 @@ import java.util.Iterator;
 @WebListener
 public class HelloListener implements ServletContextListener {
 
+    @Autowired
+    private ZuulProperties zuulProperties;
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("=====================");
         System.out.println("Context Initialized");
         System.out.println("=====================");
+
+
+        System.out.println(zuulProperties.getPrefix());
 
         MonitoringHelper.initMocks();
 

@@ -16,7 +16,8 @@ import java.util.List;
 public class SecondZuulPreFilter extends ZuulFilter {
     private static final String ZUUL_CLIENT_SERVICEURL = "zuul.client.serviceUrl";
 
-    private DynamicStringProperty defaultHost = DynamicPropertyFactory.getInstance().getStringProperty(ZuulConstants.ZUUL_DEFAULT_HOST, null);
+    private static final DynamicPropertyFactory configInstance = DynamicPropertyFactory.getInstance();
+    private final DynamicStringProperty defaultHost = configInstance.getStringProperty(ZuulConstants.ZUUL_DEFAULT_HOST, null);
 
     @Override
     public String filterType() {
@@ -31,6 +32,7 @@ public class SecondZuulPreFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         // properties 파일에 "zuul.default.host" 설정이 localhost로 되어있을 때만 실행
+        System.out.println(defaultHost.get());
         if (defaultHost.get().equals("localhost")) return true;
 
         return false;
@@ -57,18 +59,37 @@ public class SecondZuulPreFilter extends ZuulFilter {
         System.out.println("Client Namespace : " + clientNamespace);
 
         // properties 파일에서 namespace값을 기준으로 해당하는 서비스들의 URL을 받아온 뒤 쉼표(,)를 기준으로 URL을 나눈다.
-        List<String> serviceUrlList = Arrays.asList(DynamicPropertyFactory.getInstance().getStringProperty(clientNamespace + "." + ZUUL_CLIENT_SERVICEURL, null).get().split(","));
+        List<String> serviceUrlList = Arrays.asList(configInstance.getStringProperty(clientNamespace + "." + ZUUL_CLIENT_SERVICEURL, null)
+                .get()
+                .trim()
+                .split(","));
 
         List<Server> serverList = new ArrayList<>();
-        for (int i = 0; i < serviceUrlList.size(); i++) {
-            System.out.println("Service URL " + (i + 1) + ") : " + serviceUrlList.get(i));
-            serverList.add(new Server(serviceUrlList.get(i)));
+        for (String serviceUrl : serviceUrlList) {
+            // ":"를 기준으로 Host와 Port를 나눔
+            int portColonIndex = serviceUrl.lastIndexOf(":");
+            String host = serviceUrl.substring(0, portColonIndex);
+
+            // URL 가장 앞에 http:// 나 https:// 가 붙어있지 않을 경우 http:// 를 붙이는 작업
+            if (!host.startsWith("http://") && !host.startsWith("https://")) {
+                host = "http://" + host;
+            }
+            // 콜론(:)은 제외시켜야 하므로 index에 1을 더한다.
+            int port = Integer.parseInt(serviceUrl.substring(portColonIndex + 1));
+
+            System.out.println("Service URL : " + host + ":" + port);
+            /*
+             * Server의 생성자
+             *   Server(String id) : Host와 Port번호를 id에서 추출한다. 추출 도중 id의 http://와 https://를 삭제한다.
+             *                       따라서 host와 port 두 개를 매개변수로 받는 생성자[Server(String host, int port)]를 이용해야 한다.
+             */
+            serverList.add(new Server(host, port));
         }
 
         // namespace를 제외한 URI를 RequestContext에 저장
-//        requestUri = requestUri.substring(clientNamespace.length() + 1);
-//        System.out.println("request URI : " + requestUri);
-//        ctx.put("requestUri", requestUri);
+        requestUri = requestUri.substring(clientNamespace.length() + 1);
+        System.out.println("request URI : " + requestUri);
+        ctx.put("requestUri", requestUri);
 
         // Server List를 RequestContext에 저장
         ctx.put("serverList", serverList);
