@@ -1,5 +1,6 @@
 package com.direa.seonggook.zuulsample.filter;
 
+import com.netflix.client.ClientFactory;
 import com.netflix.loadbalancer.*;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
@@ -39,12 +40,17 @@ public class ThirdZuulPreFilter extends ZuulFilter {
         RequestContext ctx = RequestContext.getCurrentContext();
         List<Server> serverList = (List<Server>)ctx.get("serverList");
 
-        IRule rule = new RandomRule();
-        BaseLoadBalancer lb = new BaseLoadBalancer();
-
+//        BaseLoadBalancer lb = (BaseLoadBalancer) ClientFactory.getNamedLoadBalancer("randomLoadBalancer");
+//        ILoadBalancer lb = LoadBalancerBuilder.newBuilder().withRule(new RoundRobinRule()).buildDynamicServerListLoadBalancer();
+        ILoadBalancer lb = ClientFactory.getNamedLoadBalancer("randomLoadBalancer");
         lb.addServers(serverList);
-        lb.setRule(rule);
-        Server server = lb.chooseServer();
+        Server server = lb.chooseServer(new RoundRobinRule());
+//        IRule rule = new RandomRule();
+//        BaseLoadBalancer lb = new BaseLoadBalancer();
+//
+//        lb.addServers(serverList);
+//        lb.setRule(rule);
+//        Server server = lb.chooseServer();
 
         System.out.println("Chosen Server Host & Port : " + server.getHostPort());
         ctx.putIfAbsent("server", server);

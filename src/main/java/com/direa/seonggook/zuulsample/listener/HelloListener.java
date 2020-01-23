@@ -1,34 +1,29 @@
 package com.direa.seonggook.zuulsample.listener;
 
 import com.direa.seonggook.zuulsample.filter.*;
-import com.direa.seonggook.zuulsample.property.ZuulProperties;
 import com.netflix.client.ClientException;
 import com.netflix.client.ClientFactory;
-import com.netflix.client.config.DefaultClientConfigImpl;
-import com.netflix.config.DynamicPropertyFactory;
-import com.netflix.zuul.ZuulFilter;
+import com.netflix.client.IClientConfigAware;
+import com.netflix.client.config.*;
+import com.netflix.loadbalancer.BaseLoadBalancer;
+import com.netflix.loadbalancer.ILoadBalancer;
+import com.netflix.loadbalancer.LoadBalancerBuilder;
+import com.netflix.loadbalancer.RoundRobinRule;
 import com.netflix.zuul.filters.FilterRegistry;
 import com.netflix.zuul.monitoring.MonitoringHelper;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.sun.security.sasl.ClientFactoryImpl;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebListener;
-import java.util.Iterator;
 
 @WebListener
 public class HelloListener implements ServletContextListener {
-
-    @Autowired
-    private ZuulProperties zuulProperties;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         System.out.println("=====================");
         System.out.println("Context Initialized");
         System.out.println("=====================");
-
-
-        System.out.println(zuulProperties.getPrefix());
 
         MonitoringHelper.initMocks();
 
@@ -46,6 +41,17 @@ public class HelloListener implements ServletContextListener {
         filterRegistry.put("secondPost", new SecondZuulPostFilter());
 
 //        filterRegistry.put("error", new ZuulErrorFilter());
+
+        // Ribbon 등록
+        try {
+            IClientConfig clientConfig = new DefaultClientConfigImpl();
+            ClientFactory.registerNamedLoadBalancerFromclientConfig("randomLoadBalancer", clientConfig);
+//            clientConfig = new DefaultClientConfigImpl().set(CommonClientConfigKey.NFLoadBalancerRuleClassName, "com.netflix.loadbalancer.RandomRule");
+//            ClientFactory.registerNamedLoadBalancerFromclientConfig("roundRobinLoadBalancer", clientConfig);
+//
+        } catch (ClientException e) {
+            e.printStackTrace();
+        }
 
     }
 

@@ -1,6 +1,5 @@
 package com.direa.seonggook.zuulsample.filter;
 
-import com.netflix.config.DynamicIntProperty;
 import com.netflix.config.DynamicPropertyFactory;
 import com.netflix.config.DynamicStringProperty;
 import com.netflix.loadbalancer.Server;
@@ -32,7 +31,6 @@ public class SecondZuulPreFilter extends ZuulFilter {
     @Override
     public boolean shouldFilter() {
         // properties 파일에 "zuul.default.host" 설정이 localhost로 되어있을 때만 실행
-        System.out.println(defaultHost.get());
         if (defaultHost.get().equals("localhost")) return true;
 
         return false;
