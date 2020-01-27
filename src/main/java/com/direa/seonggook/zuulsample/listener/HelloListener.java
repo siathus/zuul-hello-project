@@ -5,10 +5,7 @@ import com.netflix.client.ClientException;
 import com.netflix.client.ClientFactory;
 import com.netflix.client.IClientConfigAware;
 import com.netflix.client.config.*;
-import com.netflix.loadbalancer.BaseLoadBalancer;
-import com.netflix.loadbalancer.ILoadBalancer;
-import com.netflix.loadbalancer.LoadBalancerBuilder;
-import com.netflix.loadbalancer.RoundRobinRule;
+import com.netflix.loadbalancer.*;
 import com.netflix.zuul.filters.FilterRegistry;
 import com.netflix.zuul.monitoring.MonitoringHelper;
 import com.sun.security.sasl.ClientFactoryImpl;
@@ -42,16 +39,26 @@ public class HelloListener implements ServletContextListener {
 
 //        filterRegistry.put("error", new ZuulErrorFilter());
 
+        BaseLoadBalancer lb = new BaseLoadBalancer();
+
+        lb.setRule(new RoundRobinRule());
+
+        lb.addServer(new Server("http://localhost", 8121));
+        lb.addServer(new Server("http://localhost", 8122));
+
+
+
+        sce.getServletContext().setAttribute("lb", lb);
         // Ribbon 등록
-        try {
-            IClientConfig clientConfig = new DefaultClientConfigImpl();
-            ClientFactory.registerNamedLoadBalancerFromclientConfig("randomLoadBalancer", clientConfig);
-//            clientConfig = new DefaultClientConfigImpl().set(CommonClientConfigKey.NFLoadBalancerRuleClassName, "com.netflix.loadbalancer.RandomRule");
-//            ClientFactory.registerNamedLoadBalancerFromclientConfig("roundRobinLoadBalancer", clientConfig);
-//
-        } catch (ClientException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            IClientConfig clientConfig = new DefaultClientConfigImpl();
+//            ClientFactory.registerNamedLoadBalancerFromclientConfig("randomLoadBalancer", clientConfig);
+////            clientConfig = new DefaultClientConfigImpl().set(CommonClientConfigKey.NFLoadBalancerRuleClassName, "com.netflix.loadbalancer.RandomRule");
+////            ClientFactory.registerNamedLoadBalancerFromclientConfig("roundRobinLoadBalancer", clientConfig);
+////
+//        } catch (ClientException e) {
+//            e.printStackTrace();
+//        }
 
     }
 

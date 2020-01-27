@@ -4,7 +4,11 @@ import com.netflix.client.ClientFactory;
 import com.netflix.loadbalancer.*;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
+import org.apache.catalina.core.ApplicationContext;
+import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -42,9 +46,9 @@ public class ThirdZuulPreFilter extends ZuulFilter {
 
 //        BaseLoadBalancer lb = (BaseLoadBalancer) ClientFactory.getNamedLoadBalancer("randomLoadBalancer");
 //        ILoadBalancer lb = LoadBalancerBuilder.newBuilder().withRule(new RoundRobinRule()).buildDynamicServerListLoadBalancer();
-        ILoadBalancer lb = ClientFactory.getNamedLoadBalancer("randomLoadBalancer");
-        lb.addServers(serverList);
-        Server server = lb.chooseServer(new RoundRobinRule());
+//        ILoadBalancer lb = ClientFactory.getNamedLoadBalancer("randomLoadBalancer");
+//        lb.addServers(serverList);
+//        Server server = lb.chooseServer(new RoundRobinRule());
 //        IRule rule = new RandomRule();
 //        BaseLoadBalancer lb = new BaseLoadBalancer();
 //
@@ -52,6 +56,8 @@ public class ThirdZuulPreFilter extends ZuulFilter {
 //        lb.setRule(rule);
 //        Server server = lb.chooseServer();
 
+        BaseLoadBalancer lb = (BaseLoadBalancer) ctx.getRequest().getServletContext().getAttribute("lb");
+        Server server = lb.chooseServer();
         System.out.println("Chosen Server Host & Port : " + server.getHostPort());
         ctx.putIfAbsent("server", server);
         System.out.println("========== Third Pre Filter End ==========");
