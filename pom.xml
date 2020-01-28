@@ -82,6 +82,13 @@
             <artifactId>ribbon-core</artifactId>
             <version>2.3.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.netflix.ribbon/ribbon-httpclient -->
+        <dependency>
+            <groupId>com.netflix.ribbon</groupId>
+            <artifactId>ribbon-httpclient</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.netflix.archaius/archaius-core -->
         <dependency>
             <groupId>com.netflix.archaius</groupId>

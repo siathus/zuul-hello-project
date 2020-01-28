@@ -39,27 +39,9 @@ public class HelloListener implements ServletContextListener {
 
 //        filterRegistry.put("error", new ZuulErrorFilter());
 
+        // Servlet Context에 Load Balancer를 저장하여 요청이 들어올 때마다 불러오도록 함
         BaseLoadBalancer lb = new BaseLoadBalancer();
-
-        lb.setRule(new RoundRobinRule());
-
-        lb.addServer(new Server("http://localhost", 8121));
-        lb.addServer(new Server("http://localhost", 8122));
-
-
-
-        sce.getServletContext().setAttribute("lb", lb);
-        // Ribbon 등록
-//        try {
-//            IClientConfig clientConfig = new DefaultClientConfigImpl();
-//            ClientFactory.registerNamedLoadBalancerFromclientConfig("randomLoadBalancer", clientConfig);
-////            clientConfig = new DefaultClientConfigImpl().set(CommonClientConfigKey.NFLoadBalancerRuleClassName, "com.netflix.loadbalancer.RandomRule");
-////            ClientFactory.registerNamedLoadBalancerFromclientConfig("roundRobinLoadBalancer", clientConfig);
-////
-//        } catch (ClientException e) {
-//            e.printStackTrace();
-//        }
-
+        sce.getServletContext().setAttribute("baseLoadBalancer", lb);
     }
 
 

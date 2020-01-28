@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class SecondZuulPreFilter extends ZuulFilter {
-    private static final String ZUUL_CLIENT_SERVICEURL = "zuul.client.serviceUrl";
+    private static final String ZUUL_CLIENT_SERVICEURL = "ribbon.listOfServers";
 
     private static final DynamicPropertyFactory configInstance = DynamicPropertyFactory.getInstance();
     private final DynamicStringProperty defaultHost = configInstance.getStringProperty(ZuulConstants.ZUUL_DEFAULT_HOST, null);
